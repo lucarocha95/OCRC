@@ -1,0 +1,54 @@
+[
+  {
+    "Banheiro":"Posto Ipiranga - Maria Quitéria",
+    "Bairro":"Lagoa",
+    "Endereço":"Av. Epitácio Pessoa, 1354 - Ipanema, Rio de Janeiro - RJ, 22471-002",
+    "Plus Code":"2Q9V+MF Ipanema, Rio de Janeiro - RJ",
+    "Limpeza":5,
+    "Facilidade\/Disponibilidade":5,
+    "Atendimento":5,
+    "Proximidade da Pista":5,
+    "Preço":5,
+    "Comentários":"Melhor banheiro da lagoa, não precisa nem falar com a atendente, só subir e usar. Limpo, sempre com papel.",
+    "Avaliador":"Luca Rocha"
+  },
+  {
+    "Banheiro":"Posto Ipiranga - Remo Botafogo",
+    "Bairro":"Lagoa",
+    "Endereço":"Av. Epitácio Pessoa, 3666 - Lagoa, Rio de Janeiro - RJ, 22471-003",
+    "Plus Code":"2QGR+MW Lagoa, Rio de Janeiro - RJ",
+    "Limpeza":5,
+    "Facilidade\/Disponibilidade":3,
+    "Atendimento":4,
+    "Proximidade da Pista":5,
+    "Preço":3,
+    "Comentários":"Bom banheiro, mas tem que pagar R$3,50. Atendentes simpáticos, mas rola aquele olhar desconfortável de quem sabe que vai ter trabalho pra limpar o banheiro depois do caos.",
+    "Avaliador":"Luca Rocha"
+  },
+  {
+    "Banheiro":"Posto BR - Parque da Catacumba",
+    "Bairro":"Lagoa",
+    "Endereço":"Av. Epitácio Pessoa, S\/N - Lagoa, Rio de Janeiro - RJ, 22471-003",
+    "Plus Code":"2QGW+VQ Lagoa, Rio de Janeiro - RJ",
+    "Limpeza":2,
+    "Facilidade\/Disponibilidade":3,
+    "Atendimento":3,
+    "Proximidade da Pista":5,
+    "Preço":5,
+    "Comentários":"Nunca tem papel, muitas vezes o chão estava alagado ou o banheiro interditado. Não recomendo",
+    "Avaliador":null
+  },
+  {
+    "Banheiro":"Hilton Copacabana",
+    "Bairro":"Leme",
+    "Endereço":"Av. Atlântica, 1020 - Copacabana, Rio de Janeiro - RJ, 22010-000",
+    "Plus Code":"2RPG+6M Copacabana, Rio de Janeiro - RJ",
+    "Limpeza":5,
+    "Facilidade\/Disponibilidade":1,
+    "Atendimento":3,
+    "Proximidade da Pista":5,
+    "Preço":5,
+    "Comentários":"Tem que se humilhar para o segurança deixar você entrar no hotel para usar o banheiro. Extremamente limpo e confortável.",
+    "Avaliador":null
+  }
+]
