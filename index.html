@@ -10,7 +10,7 @@
     <style>
         body {
             margin: 0;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f2f2f2;
             color: #333;
         }
@@ -19,12 +19,12 @@
             background-color: #a2d149;
             padding: 1rem;
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-weight: bold;
         }
 
         #map {
-            height: 90vh;
+            height: 80vh;
             width: 100%;
         }
 
@@ -40,7 +40,18 @@
 
         .stars {
             color: #f39c12;
-            /* Cor das estrelas */
+        }
+
+        .filters {
+            padding: 1rem;
+            background-color: white;
+        }
+
+        .filters label,
+        .filters select,
+        .filters input {
+            margin-right: 1rem;
+            font-size: 1rem;
         }
     </style>
 </head>
@@ -49,15 +60,39 @@
     <header>
         🚽 Onde Cagar Running Club - OCRC 🏃‍♂️💨
     </header>
+
+    <div class="filters">
+        <label for="bairro">Bairro:</label>
+        <select id="bairro">
+            <option value="">Todos</option>
+        </select>
+
+        <label for="nota">Nota mínima:</label>
+        <input type="number" id="nota" min="0" max="5" step="0.5" value="0">
+
+        <button onclick="filtrar()">Filtrar</button>
+    </div>
+
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script>
         const map = L.map('map').setView([-22.97, -43.2], 13); // Centra o mapa na posição média
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
+        // Remove qualquer camada anterior
+        map.eachLayer(function (layer) {
+            map.removeLayer(layer);
+        });
+
+        // Adiciona a nova camada OpenStreetMap
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
         }).addTo(map);
+
+
+
 
         const bathrooms = [
             {
@@ -82,7 +117,7 @@
                 "Plus Code": "2QGR+MW Lagoa, Rio de Janeiro - RJ",
                 "Latitude": -22.973124798948,
                 "Longitude": -43.2076767757608,
-                "Limpeza": 5,
+                "Limpeza": 4,
                 "Facilidade/Disponibilidade": 3,
                 "Atendimento": 4,
                 "Proximidade da Pista": 5,
@@ -149,23 +184,49 @@
                 "Preço": 5,
                 "Comentários": "Banheiro bom, mas só funciona depois das 8AM. Já fui salvo por um anjo que me levou no banheiro dos funcionários.",
                 "Avaliador": "Luca Rocha"
+            },
+            {
+                "Banheiro": "Posto BR - Parque dos Patins",
+                "Bairro": "Lagoa",
+                "Endereço": "Av. Borges de Medeiros, S/N - Lagoa, Rio de Janeiro - RJ, 22470-001",
+                "Plus Code": "2QHJ+8X Lagoa, Rio de Janeiro - RJ",
+                "Latitude": -22.9713870960151,
+                "Longitude": -43.2176154655757,
+                "Limpeza": 4,
+                "Facilidade/Disponibilidade": 4,
+                "Atendimento": 4,
+                "Proximidade da Pista": 5,
+                "Preço": 5,
+                "Comentários": "Bom banheiro, tem que pegar a chave na loja. As vezes não tem papel.",
+                "Avaliador": "Luca Rocha"
+            },
+            {
+                "Banheiro": "Posto Ipiranga - Clube Militar",
+                "Bairro": "Lagoa",
+                "Endereço": "Av. Borges de Medeiros, 3151 - Lagoa, Rio de Janeiro - RJ, 22470-001",
+                "Plus Code": "2QPQ+X8 Lagoa, Rio de Janeiro - RJ",
+                "Latitude": -22.9622032985759,
+                "Longitude": -43.2116658915691,
+                "Limpeza": 4,
+                "Facilidade/Disponibilidade": 4,
+                "Atendimento": 4,
+                "Proximidade da Pista": 5,
+                "Preço": 5,
+                "Comentários": "Simples bem feito. Banheiro limpo e espaçoso, mas tem que pegar a chave na loja.",
+                "Avaliador": "Luca Rocha"
             }
         ];
 
-        // Função para criar a string de estrelas
         function renderStars(rating) {
             let stars = '';
             for (let i = 0; i < 5; i++) {
-                if (i < rating) {
-                    stars += '<i class="fas fa-star stars"></i>'; // Estrela preenchida
-                } else {
-                    stars += '<i class="far fa-star stars"></i>'; // Estrela vazia
-                }
+                stars += i < rating ?
+                    '<i class="fas fa-star stars"></i>' :
+                    '<i class="far fa-star stars"></i>';
             }
             return stars;
         }
 
-        // Função para calcular a nota geral
         function calculateAverageRating(b) {
             const ratings = [
                 b.Limpeza,
@@ -174,18 +235,48 @@
                 b["Proximidade da Pista"],
                 b.Preço
             ];
-            const average = ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
-            return average.toFixed(1); // Média arredondada para 1 casa decimal
+            return (ratings.reduce((acc, r) => acc + r, 0) / ratings.length).toFixed(1);
         }
 
-        // Adicionando os banheiros ao mapa
-        bathrooms.forEach(b => {
-            const averageRating = calculateAverageRating(b);
-            const popup = `
+        function getColor(rating) {
+            if (rating >= 4.5) return '#2ecc71';
+            if (rating >= 3.5) return '#27ae60';
+            if (rating >= 2.5) return '#f1c40f';
+            if (rating >= 1.5) return '#e67e22';
+            return '#e74c3c';
+        }
+
+        function getIcon(rating) {
+            let color = 'red';
+            if (rating >= 4.5) color = 'green';
+            else if (rating >= 3.5) color = 'yellow';
+
+            return L.icon({
+                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
+                shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+        }
+
+        function filtrar() {
+            const bairro = document.getElementById('bairro').value;
+            const notaMinima = parseFloat(document.getElementById('nota').value.replace(',', '.')) || 0;
+
+            map.eachLayer(layer => {
+                if (layer instanceof L.Marker && !layer._url) map.removeLayer(layer);
+            });
+
+            bathrooms.forEach(b => {
+                const avg = parseFloat(calculateAverageRating(b));
+                if ((bairro === '' || b.Bairro === bairro) && avg >= notaMinima) {
+                    const popup = `
         <div class="popup-title">${b.Banheiro}</div>
         <div class="popup-section"><strong>Bairro:</strong> ${b.Bairro}</div>
         <div class="popup-section"><strong>Endereço:</strong> ${b.Endereço}</div>
-        <div class="popup-section"><strong>Nota Geral:</strong> ${averageRating}/5.0</div>
+        <div class="popup-section"><strong>Nota Geral:</strong> ${avg}/5.0</div>
         <div class="popup-section"><strong>Notas:</strong><br>
           Limpeza: ${renderStars(b.Limpeza)}<br>
           Disponibilidade: ${renderStars(b["Facilidade/Disponibilidade"])}<br>
@@ -196,8 +287,23 @@
         <div class="popup-section"><strong>Comentários:</strong> ${b.Comentários || 'Sem comentários'}</div>
       `;
 
-            L.marker([b.Latitude, b.Longitude]).addTo(map).bindPopup(popup); // Usando as coordenadas de latitude e longitude de cada banheiro
+                    L.marker([b.Latitude, b.Longitude], { icon: getIcon(avg) }).addTo(map).bindPopup(popup);
+                }
+            });
+        }
+
+
+        // Popular dropdown de bairros
+        const bairrosUnicos = [...new Set(bathrooms.map(b => b.Bairro))];
+        bairrosUnicos.forEach(b => {
+            const option = document.createElement("option");
+            option.value = b;
+            option.textContent = b;
+            document.getElementById("bairro").appendChild(option);
         });
+
+        // Mostrar todos ao carregar
+        filtrar();
     </script>
 </body>
 
