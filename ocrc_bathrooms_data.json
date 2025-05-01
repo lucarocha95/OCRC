@@ -10,7 +10,10 @@
     "Proximidade da Pista":5,
     "Preço":5,
     "Comentários":"Melhor banheiro da lagoa, não precisa nem falar com a atendente, só subir e usar. Limpo, sempre com papel.",
-    "Avaliador":"Luca Rocha"
+    "Avaliador":"Luca Rocha",
+    "Latitude": -22.9806791348418,
+    "Longitude": -43.2063125
+
   },
   {
     "Banheiro":"Posto Ipiranga - Remo Botafogo",
@@ -23,7 +26,10 @@
     "Proximidade da Pista":5,
     "Preço":3,
     "Comentários":"Bom banheiro, mas tem que pagar R$3,50. Atendentes simpáticos, mas rola aquele olhar desconfortável de quem sabe que vai ter trabalho pra limpar o banheiro depois do caos.",
-    "Avaliador":"Luca Rocha"
+    "Avaliador":"Luca Rocha",
+    "Latitude": -22.973124798948,
+    "Longitude": -43.2076767757608
+
   },
   {
     "Banheiro":"Posto BR - Parque da Catacumba",
@@ -36,7 +42,9 @@
     "Proximidade da Pista":5,
     "Preço":5,
     "Comentários":"Nunca tem papel, muitas vezes o chão estava alagado ou o banheiro interditado. Não recomendo",
-    "Avaliador":null
+    "Avaliador":"Luca Rocha",
+    "Latitude": -22.9726643100373,
+    "Longitude": -43.2030625045967
   },
   {
     "Banheiro":"Hilton Copacabana",
@@ -49,6 +57,8 @@
     "Proximidade da Pista":5,
     "Preço":5,
     "Comentários":"Tem que se humilhar para o segurança deixar você entrar no hotel para usar o banheiro. Extremamente limpo e confortável.",
-    "Avaliador":null
+    "Avaliador":"Luca Rocha",
+    "Latitude": -22.9642794223069,
+    "Longitude": -43.1733232334326
   }
 ]
