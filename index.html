@@ -1,122 +1,204 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Onde Cagar Running Club (OCRC)</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      background-color: #f2f2f2;
-      color: #333;
-    }
-    header {
-      background-color: #a2d149;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    #map {
-      height: 90vh;
-      width: 100%;
-    }
-    .popup-title {
-      font-weight: bold;
-      font-size: 1.1em;
-      margin-bottom: 5px;
-    }
-    .popup-section {
-      margin-bottom: 0.5em;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Onde Cagar Running Club (OCRC)</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        header {
+            background-color: #a2d149;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        #map {
+            height: 90vh;
+            width: 100%;
+        }
+
+        .popup-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .popup-section {
+            margin-bottom: 0.5em;
+        }
+
+        .stars {
+            color: #f39c12;
+            /* Cor das estrelas */
+        }
+    </style>
 </head>
+
 <body>
-  <header>
-    🚽 Onde Cagar Running Club - OCRC 🏃‍♂️💨
-  </header>
-  <div id="map"></div>
+    <header>
+        🚽 Onde Cagar Running Club - OCRC 🏃‍♂️💨
+    </header>
+    <div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-  <script>
-    const map = L.map('map').setView([-22.97, -43.2], 13);
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script>
+        const map = L.map('map').setView([-22.97, -43.2], 13); // Centra o mapa na posição média
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-    const bathrooms = [
-      {
-        "Banheiro": "Posto Ipiranga - Maria Quitéria",
-        "Bairro": "Lagoa",
-        "Endereço": "Av. Epitácio Pessoa, 1354 - Ipanema, Rio de Janeiro - RJ, 22471-002",
-        "Limpeza": 5,
-        "Facilidade/Disponibilidade": 5,
-        "Atendimento": 5,
-        "Proximidade da Pista": 5,
-        "Preço": 5,
-        "Comentários": "Melhor banheiro da lagoa, não precisa nem falar com a atendente, só subir e usar. Limpo, sempre com papel.",
-        "Latitude": -22.9806791348418,
-        "Longitude": -43.2063125
-      },
-      {
-        "Banheiro": "Posto Ipiranga - Remo Botafogo",
-        "Bairro": "Lagoa",
-        "Endereço": "Av. Epitácio Pessoa, 3666 - Lagoa, Rio de Janeiro - RJ, 22471-003",
-        "Limpeza": 5,
-        "Facilidade/Disponibilidade": 3,
-        "Atendimento": 4,
-        "Proximidade da Pista": 5,
-        "Preço": 3,
-        "Comentários": "Bom banheiro, mas tem que pagar R$3,50. Atendentes simpáticos, mas rola aquele olhar desconfortável de quem sabe que vai ter trabalho pra limpar o banheiro depois do caos.",
-        "Latitude": -22.973124798948,
-        "Longitude": -43.2076767757608
-      },
-      {
-        "Banheiro": "Posto BR - Parque da Catacumba",
-        "Bairro": "Lagoa",
-        "Endereço": "Av. Epitácio Pessoa, S/N - Lagoa, Rio de Janeiro - RJ, 22471-003",
-        "Limpeza": 2,
-        "Facilidade/Disponibilidade": 3,
-        "Atendimento": 3,
-        "Proximidade da Pista": 5,
-        "Preço": 5,
-        "Comentários": "Nunca tem papel, muitas vezes o chão estava alagado ou o banheiro interditado. Não recomendo.",
-        "Latitude": -22.9726643100373,
-        "Longitude": -43.2030625045967
-      },
-      {
-        "Banheiro": "Hilton Copacabana",
-        "Bairro": "Leme",
-        "Endereço": "Av. Atlântica, 1020 - Copacabana, Rio de Janeiro - RJ, 22010-000",
-        "Limpeza": 5,
-        "Facilidade/Disponibilidade": 1,
-        "Atendimento": 3,
-        "Proximidade da Pista": 5,
-        "Preço": 5,
-        "Comentários": "Tem que se humilhar para o segurança deixar você entrar no hotel para usar o banheiro. Extremamente limpo e confortável.",
-        "Latitude": -22.9642794223069,
-        "Longitude": -43.1733232334326
-      }
-    ];
+        const bathrooms = [
+            {
+                "Banheiro": "Posto Ipiranga - Maria Quitéria",
+                "Bairro": "Lagoa",
+                "Endereço": "Av. Epitácio Pessoa, 1354 - Ipanema, Rio de Janeiro - RJ, 22471-002",
+                "Plus Code": "2Q9V+MF Ipanema, Rio de Janeiro - RJ",
+                "Latitude": -22.9806791348418,
+                "Longitude": -43.2063125045963,
+                "Limpeza": 5,
+                "Facilidade/Disponibilidade": 5,
+                "Atendimento": 5,
+                "Proximidade da Pista": 5,
+                "Preço": 5,
+                "Comentários": "Melhor banheiro da lagoa, não precisa nem falar com a atendente, só subir e usar. Limpo, sempre com papel.",
+                "Avaliador": "Luca Rocha"
+            },
+            {
+                "Banheiro": "Posto Ipiranga - Remo Botafogo",
+                "Bairro": "Lagoa",
+                "Endereço": "Av. Epitácio Pessoa, 3666 - Lagoa, Rio de Janeiro - RJ, 22471-003",
+                "Plus Code": "2QGR+MW Lagoa, Rio de Janeiro - RJ",
+                "Latitude": -22.973124798948,
+                "Longitude": -43.2076767757608,
+                "Limpeza": 5,
+                "Facilidade/Disponibilidade": 3,
+                "Atendimento": 4,
+                "Proximidade da Pista": 5,
+                "Preço": 3,
+                "Comentários": "Bom banheiro, mas tem que pagar R$3,50. Atendentes simpáticos, mas rola aquele olhar desconfortável de quem sabe que vai ter trabalho pra limpar o banheiro depois do caos.",
+                "Avaliador": "Luca Rocha"
+            },
+            {
+                "Banheiro": "Posto BR - Parque da Catacumba",
+                "Bairro": "Lagoa",
+                "Endereço": "Av. Epitácio Pessoa, S/N - Lagoa, Rio de Janeiro - RJ, 22471-003",
+                "Plus Code": "2QGW+VQ Lagoa, Rio de Janeiro - RJ",
+                "Latitude": -22.9726643100373,
+                "Longitude": -43.2030625045967,
+                "Limpeza": 1,
+                "Facilidade/Disponibilidade": 3,
+                "Atendimento": 3,
+                "Proximidade da Pista": 5,
+                "Preço": 5,
+                "Comentários": "Nunca tem papel, muitas vezes o chão estava alagado ou o banheiro interditado. Não recomendo",
+                "Avaliador": "Luca Rocha"
+            },
+            {
+                "Banheiro": "Hilton Copacabana",
+                "Bairro": "Leme",
+                "Endereço": "Av. Atlântica, 1020 - Copacabana, Rio de Janeiro - RJ, 22010-000",
+                "Plus Code": "2RPG+6M Copacabana, Rio de Janeiro - RJ",
+                "Latitude": -22.9642794223069,
+                "Longitude": -43.1733232334326,
+                "Limpeza": 5,
+                "Facilidade/Disponibilidade": 1,
+                "Atendimento": 3,
+                "Proximidade da Pista": 5,
+                "Preço": 5,
+                "Comentários": "Tem que se humilhar para o segurança deixar você entrar no hotel para usar o banheiro. Extremamente limpo e confortável.",
+                "Avaliador": "Luca Rocha"
+            },
+            {
+                "Banheiro": "Posto BR - Aterro do Flamengo",
+                "Bairro": "Flamengo",
+                "Endereço": "Av. Infante Dom Henrique, S/N - Flamengo, Rio de Janeiro - RJ, 22021-140",
+                "Plus Code": "3R9G+MM Flamengo, Rio de Janeiro - RJ",
+                "Latitude": -22.9307505063117,
+                "Longitude": -43.1733619859609,
+                "Limpeza": 2,
+                "Facilidade/Disponibilidade": 2,
+                "Atendimento": 2,
+                "Proximidade da Pista": 4,
+                "Preço": 3,
+                "Comentários": "Atendentes sempre com má vontade, muitas vezes falaram que não estava funcionando (mesmo tendo pessoas saindo) e o masculino não tem vaso.",
+                "Avaliador": "Luca Rocha"
+            },
+            {
+                "Banheiro": "Marina da Gloria",
+                "Bairro": "Glória",
+                "Endereço": "Av. Infante Dom Henrique, S/N - Flamengo, Rio de Janeiro - RJ, 22021-140",
+                "Plus Code": "3R9G+MM Flamengo, Rio de Janeiro - RJ",
+                "Latitude": -22.9200722584758,
+                "Longitude": -43.1693442353115,
+                "Limpeza": 5,
+                "Facilidade/Disponibilidade": 3,
+                "Atendimento": 5,
+                "Proximidade da Pista": 3,
+                "Preço": 5,
+                "Comentários": "Banheiro bom, mas só funciona depois das 8AM. Já fui salvo por um anjo que me levou no banheiro dos funcionários.",
+                "Avaliador": "Luca Rocha"
+            }
+        ];
 
-    bathrooms.forEach(b => {
-      const popup = `
+        // Função para criar a string de estrelas
+        function renderStars(rating) {
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                if (i < rating) {
+                    stars += '<i class="fas fa-star stars"></i>'; // Estrela preenchida
+                } else {
+                    stars += '<i class="far fa-star stars"></i>'; // Estrela vazia
+                }
+            }
+            return stars;
+        }
+
+        // Função para calcular a nota geral
+        function calculateAverageRating(b) {
+            const ratings = [
+                b.Limpeza,
+                b["Facilidade/Disponibilidade"],
+                b.Atendimento,
+                b["Proximidade da Pista"],
+                b.Preço
+            ];
+            const average = ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
+            return average.toFixed(1); // Média arredondada para 1 casa decimal
+        }
+
+        // Adicionando os banheiros ao mapa
+        bathrooms.forEach(b => {
+            const averageRating = calculateAverageRating(b);
+            const popup = `
         <div class="popup-title">${b.Banheiro}</div>
         <div class="popup-section"><strong>Bairro:</strong> ${b.Bairro}</div>
         <div class="popup-section"><strong>Endereço:</strong> ${b.Endereço}</div>
+        <div class="popup-section"><strong>Nota Geral:</strong> ${averageRating}/5.0</div>
         <div class="popup-section"><strong>Notas:</strong><br>
-          Limpeza: ${b.Limpeza} | Disponibilidade: ${b["Facilidade/Disponibilidade"]} | Atendimento: ${b.Atendimento}<br>
-          Proximidade: ${b["Proximidade da Pista"]} | Preço: ${b.Preço}
+          Limpeza: ${renderStars(b.Limpeza)}<br>
+          Disponibilidade: ${renderStars(b["Facilidade/Disponibilidade"])}<br>
+          Atendimento: ${renderStars(b.Atendimento)}<br>
+          Proximidade: ${renderStars(b["Proximidade da Pista"])}<br>
+          Preço: ${renderStars(b.Preço)}
         </div>
         <div class="popup-section"><strong>Comentários:</strong> ${b.Comentários || 'Sem comentários'}</div>
       `;
 
-      const latLng = [b.Latitude, b.Longitude];
-      L.marker(latLng).addTo(map).bindPopup(popup);
-    });
-  </script>
+            L.marker([b.Latitude, b.Longitude]).addTo(map).bindPopup(popup); // Usando as coordenadas de latitude e longitude de cada banheiro
+        });
+    </script>
 </body>
+
 </html>
