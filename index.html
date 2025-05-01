@@ -79,13 +79,13 @@
     <script>
         const map = L.map('map').setView([-22.97, -43.2], 13); // Centra o mapa na posição média
 
-        // Remove qualquer camada anterior
+        // Remove a camada padrão (se já existir)
         map.eachLayer(function (layer) {
             map.removeLayer(layer);
         });
 
-        // Adiciona a nova camada OpenStreetMap
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        // Adiciona a nova camada com o estilo CartoDB minimalista
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
             subdomains: 'abcd',
             maxZoom: 19
