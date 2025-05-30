@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OCRC - Onde Cagar Running Club</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    #map {
+      height: 90vh;
+    }
+
+    .topbar {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .topbar button {
+      padding: 6px 10px;
+    }
+
+    #loginForm,
+    #signupForm {
+      position: absolute;
+      top: 50px;
+      right: 10px;
+      z-index: 1000;
+      background: white;
+      padding: 10px;
+      border: 1px solid #ccc;
+      display: none;
+    }
+
+    #loginForm input,
+    #signupForm input {
+      display: block;
+      margin-bottom: 6px;
+      width: 200px;
+    }
+
+    .popup-box {
+      font-size: 13px;
+      line-height: 1.4;
+      width: 250px;
+    }
+
+    .popup-box input,
+    .popup-box textarea {
+      width: 100%;
+      margin: 4px 0;
+      font-size: 12px;
+    }
+
+    .popup-box button {
+      width: 100%;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .avaliar-form {
+      display: none;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 style="margin: 10px; text-align: center;">Onde Cagar Running Club 🏃‍♂️💩</h1>
+
+  <div class="topbar">
+    <span id="welcomeText" style="display:none; font-size: 14px;"></span>
+    <button id="logoutBtn" style="display:none;" onclick="logout()">Sair</button>
+    <button id="signupBtn">Cadastre-se</button>
+    <button id="loginBtn">Login</button>
+  </div>
+
+  <div id="loginForm">
+    <input type="email" id="loginEmail" placeholder="Email" />
+    <input type="password" id="loginSenha" placeholder="Senha" />
+    <button onclick="logar()">Entrar</button>
+  </div>
+
+  <div id="signupForm">
+    <input type="email" id="signupEmail" placeholder="Email" />
+    <input type="password" id="signupSenha" placeholder="Senha" />
+    <button onclick="cadastrar()">Cadastrar</button>
+  </div>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
+    const supabase = window.supabase.createClient(
+      'https://tvxsgovslvvflzltutkb.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2eHNnb3ZzbHZ2Zmx6bHR1dGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2MTEyMTgsImV4cCI6MjA2NDE4NzIxOH0.aeZJtAGHHeskjz90UjuRPai5ld1ZI1EaxZWrNiaZabg'
+    );
+
+    let user = null;
+    let userNome = null;
+
+    async function getUser() {
+      const { data: { session } } = await supabase.auth.getSession();
+      user = session?.user ?? null;
+      if (user) {
+        const { data } = await supabase.from("profiles").select("nome").eq("id", user.id).single();
+
+        if (data?.nome) {
+          userNome = data.nome;
+        } else {
+          userNome = prompt("Digite seu nome para exibir nas avaliações:");
+          if (userNome) {
+            await supabase.from("profiles").upsert({ id: user.id, nome: userNome });
+          }
+        }
+
+        if (userNome) {
+          document.getElementById("welcomeText").textContent = `Bem-vindo, ${userNome}`;
+          document.getElementById("welcomeText").style.display = "inline";
+        }
+
+        document.getElementById("logoutBtn").style.display = "inline";
+        document.getElementById("loginBtn").style.display = "none";
+        document.getElementById("signupBtn").style.display = "none";
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("signupForm").style.display = "none";
+      }
+    }
+
+    getUser();
+    document.getElementById("loginBtn").onclick = () => {
+      document.getElementById("loginForm").style.display = "block";
+      document.getElementById("signupForm").style.display = "none";
+    };
+
+    document.getElementById("signupBtn").onclick = () => {
+      document.getElementById("signupForm").style.display = "block";
+      document.getElementById("loginForm").style.display = "none";
+    };
+
+    async function cadastrar() {
+      const email = document.getElementById("signupEmail").value;
+      const senha = document.getElementById("signupSenha").value;
+      const { error } = await supabase.auth.signUp({ email, password: senha });
+      if (error) return alert("Erro ao cadastrar: " + error.message);
+      alert("Cadastro realizado. Agora faça login para concluir.");
+      location.reload();
+    }
+
+    async function logar() {
+      const email = document.getElementById("loginEmail").value;
+      const senha = document.getElementById("loginSenha").value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+      if (error) return alert("Erro ao entrar: " + error.message);
+      alert("Login realizado com sucesso!");
+      location.reload();
+    }
+
+    async function logout() {
+      await supabase.auth.signOut();
+      location.reload();
+    }
+
+    const map = L.map('map').setView([-22.95, -43.2], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    function getMarkerIcon(media) {
+      let color = 'gray';
+      if (media !== null) {
+        if (media < 3) color = 'red';
+        else if (media < 4) color = 'orange';
+        else color = 'green';
+      }
+      return L.icon({
+        iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+    }
+
+    fetch("http://127.0.0.1:8000/bathrooms")
+      .then(res => res.json())
+      .then(data => {
+        data.forEach(b => {
+          const icon = getMarkerIcon(b.media_final);
+          const marker = L.marker([b.latitude, b.longitude], { icon }).addTo(map);
+          marker.on("click", () => abrirPopup(b.bathroom_id, marker));
+        });
+      });
+
+    function abrirPopup(id, marker) {
+      fetch("http://127.0.0.1:8000/bathrooms/" + id)
+        .then(res => res.json())
+        .then(data => {
+          const b = data.banheiro;
+          const media = b.media_final !== null ? `${parseFloat(b.media_final).toFixed(1)} / 5` : "Sem avaliações ainda";
+          let html = `
+            <div class="popup-box">
+              <strong>${b.nome || b.nomes}</strong><br/>
+              📍 <em>${b.bairro}</em><br/>
+              ${b.endereco}<br/>
+              ⭐ <strong>Média:</strong> ${media}<br/>
+              <hr/>
+              <strong>Avaliações:</strong><ul>`;
+          if (!data.avaliacoes || data.avaliacoes.length === 0) {
+            html += `<li><em>Sem avaliações ainda.</em></li>`;
+          } else {
+            data.avaliacoes.forEach(a => {
+              html += `<li><strong>${a.nota_final}</strong> — ${a.comments} <em>(${a.autor})</em></li>`;
+            });
+          }
+          html += `</ul><hr/>
+            <button onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">Avaliar</button>
+            <div class="avaliar-form">
+              <textarea id="comentario" placeholder="Comentário..."></textarea>
+              <input type="number" id="nota1" placeholder="Limpeza (0–5)" />
+              <input type="number" id="nota2" placeholder="Disponibilidade (0–5)" />
+              <input type="number" id="nota3" placeholder="Atendimento (0–5)" />
+              <input type="number" id="nota4" placeholder="Proximidade (0–5)" />
+              <input type="number" id="nota5" placeholder="Preço (0–5)" />
+              <button onclick="enviar('${b.bathroom_id}', this)">Enviar</button>
+            </div>
+          </div>`;
+          marker.bindPopup(html).openPopup();
+        });
+    }
+
+    async function enviar(bathroomId, btn) {
+      if (!user) {
+        alert("Você precisa estar logado.");
+        return;
+      }
+
+      const parent = btn.closest(".popup-box");
+      const comentario = parent.querySelector("#comentario").value.trim();
+      const notas = ["nota1", "nota2", "nota3", "nota4", "nota5"].map(id =>
+        parseFloat(parent.querySelector("#" + id).value)
+      );
+
+      if (notas.some(n => isNaN(n) || n < 0 || n > 5)) {
+        alert("Preencha todas as notas de 0 a 5.");
+        return;
+      }
+
+      const payload = {
+        bathroom_id: bathroomId,
+        user_id: user.id,
+        comments: comentario,
+        nota_limpeza: notas[0],
+        nota_disponibilidade: notas[1],
+        nota_atendimento: notas[2],
+        nota_proximidade_pista: notas[3],
+        nota_preco: notas[4]
+      };
+
+      const res = await fetch("http://127.0.0.1:8000/ratings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      alert(data.mensagem || "Erro ao enviar.");
+      abrirPopup(bathroomId, map._layers[btn.closest(".leaflet-popup")._source._leaflet_id]);
+    }
+  </script>
+</body>
+
+</html>
