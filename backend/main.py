@@ -26,11 +26,11 @@ class Rating(BaseModel):
     bathroom_id: str
     user_id: str
     comments: str
-    nota_limpeza: float
-    nota_disponibilidade: float
-    nota_atendimento: float
-    nota_proximidade_pista: float
-    nota_preco: float
+    nota_limpeza: int
+    nota_disponibilidade: int
+    nota_atendimento: int
+    nota_proximidade_pista: int
+    nota_preco: int
 
 @app.get("/bathrooms")
 def listar_banheiros():
@@ -54,7 +54,9 @@ def detalhes_banheiro(bathroom_id: str):
             user_id = r.get("user_id")
             nome = "Anônimo"
             if user_id:
+
                 u_res = requests.get(f"{SUPABASE_URL}/rest/v1/profiles?id=eq.{user_id}", headers=HEADERS)
+
                 if u_res.status_code == 200 and u_res.json():
                     nome = u_res.json()[0].get("nome", "Anônimo")
 
@@ -90,8 +92,9 @@ def adicionar_rating(rating: Rating):
         "nota_preco": rating.nota_preco,
         "nota_final": nota_final
     }
-
+    
     res = requests.post(f"{SUPABASE_URL}/rest/v1/ratings", headers=HEADERS, json=payload)
+    
     if res.status_code not in [200, 201]:
         raise HTTPException(status_code=500, detail="Erro ao salvar avaliação")
 

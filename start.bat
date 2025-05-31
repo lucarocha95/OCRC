@@ -1,0 +1,9 @@
+@echo off
+echo Iniciando o backend FastAPI...
+start cmd /k "cd backend && uvicorn main:app --reload"
+
+echo Iniciando o servidor HTTP para o frontend...
+start cmd /k "cd frontend && python -m http.server 8001"
+
+echo Abrindo o site no navegador...
+start http://localhost:8001/index.html
