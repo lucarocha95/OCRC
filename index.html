@@ -5,6 +5,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OCRC - Onde Cagar Running Club</title>
+  <header class="logo-bar">
+    <img src="frontend\assets\logo_horizontal.png" alt="Logo do OCRC" class="logo-ocrc">
+    <h1 class="logo-text">Onde Cagar Running Club</h1>
+  </header>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
@@ -73,11 +77,39 @@
       display: none;
       margin-top: 5px;
     }
+
+    .logo-bar {
+      display: flex;
+      align-items: center;
+      /* alinha verticalmente */
+      justify-content: center;
+      /* centraliza horizontalmente na tela */
+      gap: 0.1rem;
+      /* espaço entre a imagem e o texto */
+      padding: 1rem 2rem;
+      background-color: #ffffff;
+      /* ou outra cor */
+    }
+
+    .logo-ocrc {
+      width: 150px;
+      /* ajuste conforme o tamanho ideal */
+      height: auto;
+    }
+
+    .logo-text {
+      font-family: 'Arial', sans-serif;
+      font-size: 1.3rem;
+      color: #333;
+      /* cor do texto */
+      margin: 0;
+      /* remove margem padrão */
+    }
   </style>
 </head>
 
 <body>
-  <h1 style="margin: 10px; text-align: center;">PooPoint 🏃‍♂️💩</h1>
+  <!-- <h1 style="margin: 10px; text-align: center;">PooPoint 🏃‍♂️💩</h1> -->
 
   <div class="topbar">
     <span id="welcomeText" style="display:none; font-size: 14px;"></span>
