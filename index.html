@@ -93,6 +93,7 @@
   </div>
 
   <div id="signupForm">
+    <input type="text" id="signupNome" placeholder="Nome" />
     <input type="email" id="signupEmail" placeholder="Email" />
     <input type="password" id="signupSenha" placeholder="Senha" />
     <button onclick="cadastrar()">Cadastrar</button>
@@ -121,31 +122,55 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2eHNnb3ZzbHZ2Zmx6bHR1dGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2MTEyMTgsImV4cCI6MjA2NDE4NzIxOH0.aeZJtAGHHeskjz90UjuRPai5ld1ZI1EaxZWrNiaZabg";
 
         try {
+          // Tenta buscar o nome salvo no Supabase
+          const token = session.access_token;
+
           const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&select=nome`, {
             headers: {
               "apikey": SUPABASE_KEY,
-              "Authorization": `Bearer ${SUPABASE_KEY}`,
+              "Authorization": `Bearer ${token}`,
               "Accept": "application/json"
             }
           });
 
           const result = await res.json();
+          console.log("🔎 Resultado do fetch de perfil:", result);
 
-          if (result.length > 0 && result[0].nome) {
+          if (Array.isArray(result) && result.length > 0 && result[0].nome) {
             userNome = result[0].nome;
-          } else {
-            userNome = prompt("Digite seu nome para exibir nas avaliações:");
-            if (userNome) {
-              await supabase.from("profiles").upsert({ id: user.id, nome: userNome });
+          }
+
+
+          // Se o nome ainda não estiver salvo, tenta usar o que está no localStorage
+          if (!userNome) {
+            const nomeParaSalvar = localStorage.getItem("nomeParaSalvar");
+
+            if (nomeParaSalvar) {
+              const { error } = await supabase.from("profiles").upsert({
+                id: user.id,
+                nome: nomeParaSalvar
+              });
+
+              if (!error) {
+                console.log("✅ Nome salvo com sucesso:", nomeParaSalvar);
+                userNome = nomeParaSalvar;
+                localStorage.removeItem("nomeParaSalvar");
+              } else {
+                console.error("❌ Erro ao salvar nome:", error.message);
+              }
             }
           }
 
+          // ✅ Exibe a saudação logo após garantir que userNome está definido
           if (userNome) {
             const welcomeEl = document.getElementById("welcomeText");
             welcomeEl.textContent = `Bem-vindo, ${userNome}`;
             welcomeEl.style.display = "inline";
+          } else {
+            console.warn("⚠️ userNome não definido, saudação não exibida.");
           }
 
+          // Atualiza o layout
           document.getElementById("logoutBtn").style.display = "inline";
           document.getElementById("loginBtn").style.display = "none";
           document.getElementById("signupBtn").style.display = "none";
@@ -153,7 +178,7 @@
           document.getElementById("signupForm").style.display = "none";
 
         } catch (err) {
-          console.error("Erro ao buscar o nome do usuário:", err);
+          console.error("Erro ao buscar/salvar o nome:", err);
         }
       }
     }
@@ -171,13 +196,27 @@
     };
 
     async function cadastrar() {
+      const nome = document.getElementById("signupNome").value.trim();
       const email = document.getElementById("signupEmail").value;
       const senha = document.getElementById("signupSenha").value;
-      const { error } = await supabase.auth.signUp({ email, password: senha });
+
+      if (!nome || !email || !senha) {
+        alert("Preencha todos os campos.");
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signUp({ email, password: senha });
+
       if (error) return alert("Erro ao cadastrar: " + error.message);
-      alert("Cadastro realizado. Agora faça login para concluir.");
+
+      // Salva o nome temporariamente no localStorage
+      localStorage.setItem("nomeParaSalvar", nome);
+
+      alert("Cadastro realizado! Agora faça login para continuar.");
       location.reload();
     }
+
+
 
     async function logar() {
       const email = document.getElementById("loginEmail").value;
