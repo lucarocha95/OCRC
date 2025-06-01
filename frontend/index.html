@@ -212,7 +212,7 @@
       });
     }
 
-    fetch("http://127.0.0.1:8000/bathrooms")
+    fetch("https://ocrc-7dd5.onrender.com/bathrooms")
       .then(res => res.json())
       .then(data => {
         data.forEach(b => {
@@ -223,7 +223,7 @@
       });
 
     function abrirPopup(id, marker) {
-      fetch("http://127.0.0.1:8000/bathrooms/" + id)
+      fetch("https://ocrc-7dd5.onrender.com/bathrooms/" + id)
         .then(res => res.json())
         .then(data => {
           const b = data.banheiro;
@@ -287,7 +287,7 @@
         nota_preco: notas[4]
       };
 
-      const res = await fetch("http://127.0.0.1:8000/ratings", {
+      const res = await fetch("https://ocrc-7dd5.onrender.com/ratings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
