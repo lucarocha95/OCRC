@@ -8,7 +8,9 @@ app = FastAPI()
 
 origins = [
     "https://lucarocha95.github.io",
-    "https://www.lucarocha95.github.io"
+    "https://www.lucarocha95.github.io",
+    "http://127.0.0.1:5500",  # Live Server do VS Code
+    "http://localhost:5500"
 ]
 
 app.add_middleware(
