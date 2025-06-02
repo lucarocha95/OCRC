@@ -5,12 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OCRC - Onde Cagar Running Club</title>
-  <header class="logo-bar">
-    <img src="frontend\assets\logo_horizontal.png" alt="Logo do OCRC" class="logo-ocrc">
-    <h1 class="logo-text">Onde Cagar Running Club</h1>
-  </header>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <style>
     body {
       margin: 0;
@@ -60,7 +57,6 @@
       width: 250px;
     }
 
-    .popup-box input,
     .popup-box textarea {
       width: 100%;
       margin: 4px 0;
@@ -78,22 +74,33 @@
       margin-top: 5px;
     }
 
+    .star-group {
+      display: flex;
+      gap: 4px;
+      margin: 4px 0;
+    }
+
+    .star {
+      font-size: 16px;
+      color: #ccc;
+      cursor: pointer;
+    }
+
+    .star.selected {
+      color: gold;
+    }
+
     .logo-bar {
       display: flex;
       align-items: center;
-      /* alinha verticalmente */
       justify-content: center;
-      /* centraliza horizontalmente na tela */
       gap: 0.1rem;
-      /* espaço entre a imagem e o texto */
       padding: 1rem 2rem;
       background-color: #ffffff;
-      /* ou outra cor */
     }
 
     .logo-ocrc {
       width: 150px;
-      /* ajuste conforme o tamanho ideal */
       height: auto;
     }
 
@@ -101,15 +108,17 @@
       font-family: 'Arial', sans-serif;
       font-size: 1.3rem;
       color: #333;
-      /* cor do texto */
       margin: 0;
-      /* remove margem padrão */
     }
   </style>
 </head>
 
+
 <body>
-  <!-- <h1 style="margin: 10px; text-align: center;">PooPoint 🏃‍♂️💩</h1> -->
+  <header class="logo-bar">
+    <img src="frontend/assets/logo_horizontal.png" alt="Logo do OCRC" class="logo-ocrc">
+    <h1 class="logo-text">Poo Point</h1>
+  </header>
 
   <div class="topbar">
     <span id="welcomeText" style="display:none; font-size: 14px;"></span>
@@ -136,10 +145,9 @@
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
   <script>
     const API_BASE = "https://ocrc-7dd5.onrender.com";
-
     const supabase = window.supabase.createClient(
-      'https://tvxsgovslvvflzltutkb.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2eHNnb3ZzbHZ2Zmx6bHR1dGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2MTEyMTgsImV4cCI6MjA2NDE4NzIxOH0.aeZJtAGHHeskjz90UjuRPai5ld1ZI1EaxZWrNiaZabg'
+      "https://tvxsgovslvvflzltutkb.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2eHNnb3ZzbHZ2Zmx6bHR1dGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2MTEyMTgsImV4cCI6MjA2NDE4NzIxOH0.aeZJtAGHHeskjz90UjuRPai5ld1ZI1EaxZWrNiaZabg"
     );
 
     let user = null;
@@ -150,68 +158,37 @@
       user = session?.user ?? null;
 
       if (user) {
-        const SUPABASE_URL = "https://tvxsgovslvvflzltutkb.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2eHNnb3ZzbHZ2Zmx6bHR1dGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2MTEyMTgsImV4cCI6MjA2NDE4NzIxOH0.aeZJtAGHHeskjz90UjuRPai5ld1ZI1EaxZWrNiaZabg";
-
-        try {
-          // Tenta buscar o nome salvo no Supabase
-          const token = session.access_token;
-
-          const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&select=nome`, {
-            headers: {
-              "apikey": SUPABASE_KEY,
-              "Authorization": `Bearer ${token}`,
-              "Accept": "application/json"
-            }
-          });
-
-          const result = await res.json();
-          console.log("🔎 Resultado do fetch de perfil:", result);
-
-          if (Array.isArray(result) && result.length > 0 && result[0].nome) {
-            userNome = result[0].nome;
+        const token = session.access_token;
+        const res = await fetch(`https://tvxsgovslvvflzltutkb.supabase.co/rest/v1/profiles?id=eq.${user.id}&select=nome`, {
+          headers: {
+            "apikey": supabase.supabaseKey,
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json"
           }
+        });
 
+        const result = await res.json();
+        if (result[0]?.nome) userNome = result[0].nome;
 
-          // Se o nome ainda não estiver salvo, tenta usar o que está no localStorage
-          if (!userNome) {
-            const nomeParaSalvar = localStorage.getItem("nomeParaSalvar");
-
-            if (nomeParaSalvar) {
-              const { error } = await supabase.from("profiles").upsert({
-                id: user.id,
-                nome: nomeParaSalvar
-              });
-
-              if (!error) {
-                console.log("✅ Nome salvo com sucesso:", nomeParaSalvar);
-                userNome = nomeParaSalvar;
-                localStorage.removeItem("nomeParaSalvar");
-              } else {
-                console.error("❌ Erro ao salvar nome:", error.message);
-              }
-            }
+        if (!userNome) {
+          const nomeParaSalvar = localStorage.getItem("nomeParaSalvar");
+          if (nomeParaSalvar) {
+            await supabase.from("profiles").upsert({ id: user.id, nome: nomeParaSalvar });
+            userNome = nomeParaSalvar;
+            localStorage.removeItem("nomeParaSalvar");
           }
-
-          // ✅ Exibe a saudação logo após garantir que userNome está definido
-          if (userNome) {
-            const welcomeEl = document.getElementById("welcomeText");
-            welcomeEl.textContent = `Bem-vindo, ${userNome}`;
-            welcomeEl.style.display = "inline";
-          } else {
-            console.warn("⚠️ userNome não definido, saudação não exibida.");
-          }
-
-          // Atualiza o layout
-          document.getElementById("logoutBtn").style.display = "inline";
-          document.getElementById("loginBtn").style.display = "none";
-          document.getElementById("signupBtn").style.display = "none";
-          document.getElementById("loginForm").style.display = "none";
-          document.getElementById("signupForm").style.display = "none";
-
-        } catch (err) {
-          console.error("Erro ao buscar/salvar o nome:", err);
         }
+
+        if (userNome) {
+          document.getElementById("welcomeText").textContent = `Bem-vindo, ${userNome}`;
+          document.getElementById("welcomeText").style.display = "inline";
+        }
+
+        document.getElementById("logoutBtn").style.display = "inline";
+        document.getElementById("loginBtn").style.display = "none";
+        document.getElementById("signupBtn").style.display = "none";
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("signupForm").style.display = "none";
       }
     }
 
@@ -237,18 +214,13 @@
         return;
       }
 
-      const { data, error } = await supabase.auth.signUp({ email, password: senha });
-
+      const { error } = await supabase.auth.signUp({ email, password: senha });
       if (error) return alert("Erro ao cadastrar: " + error.message);
 
-      // Salva o nome temporariamente no localStorage
       localStorage.setItem("nomeParaSalvar", nome);
-
       alert("Cadastro realizado! Agora faça login para continuar.");
       location.reload();
     }
-
-
 
     async function logar() {
       const email = document.getElementById("loginEmail").value;
@@ -264,24 +236,45 @@
       location.reload();
     }
 
-    const map = L.map('map').setView([-22.95, -43.2], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    const map = L.map("map").setView([-22.95, -43.2], 13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
 
     function getMarkerIcon(media) {
-      let color = 'black';
+      let color = "black";
       if (media !== null) {
-        if (media < 3) color = 'red';
-        else if (media < 4) color = 'orange';
-        else color = 'green';
+        if (media < 3) color = "red";
+        else if (media < 4) color = "orange";
+        else color = "green";
       }
       return L.icon({
         iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+        shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
         iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
         shadowSize: [41, 41]
       });
+    }
+
+    const camposNotas = [
+      { id: "limpeza", label: "Limpeza" },
+      { id: "disponibilidade", label: "Disponibilidade" },
+      { id: "atendimento", label: "Atendimento" },
+      { id: "proximidade", label: "Proximidade" },
+      { id: "preco", label: "Preço" }
+    ];
+
+    function gerarGrupoEstrelas(id, label) {
+      let html = `<div><label>${label}</label><div class='star-group' data-id='${id}'>`;
+      for (let i = 1; i <= 5; i++) {
+        html += `<span class='star' data-value='${i}'>&#9733;</span>`;
+      }
+      html += `</div></div>`;
+      return html;
     }
 
     function carregarMarcadores() {
@@ -303,6 +296,7 @@
     }
 
     carregarMarcadores();
+    iniciarLocalizacaoEmTempoReal();
 
     function abrirPopup(id, marker) {
       fetch(`${API_BASE}/bathrooms/` + id)
@@ -315,9 +309,10 @@
               <strong>${b.nome || b.nomes}</strong><br/>
               📍 <em>${b.bairro}</em><br/>
               ${b.endereco}<br/>
-              ⭐ <strong>Média:</strong> ${media}<br/>
+              ⭐ <strong>Nota Final:</strong> ${media}<br/>
               <hr/>
               <strong>Avaliações:</strong><ul>`;
+
           if (!data.avaliacoes || data.avaliacoes.length === 0) {
             html += `<li><em>Sem avaliações ainda.</em></li>`;
           } else {
@@ -325,20 +320,32 @@
               html += `<li><strong>${a.nota_final}</strong> — ${a.comments} <em>(${a.autor})</em></li>`;
             });
           }
+
           html += `</ul><hr/>
             <button onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">Avaliar</button>
             <div class="avaliar-form">
               <textarea id="comentario" placeholder="Comentário..."></textarea>
-              <input type="number" id="nota1" placeholder="Limpeza (0–5)" />
-              <input type="number" id="nota2" placeholder="Disponibilidade (0–5)" />
-              <input type="number" id="nota3" placeholder="Atendimento (0–5)" />
-              <input type="number" id="nota4" placeholder="Proximidade (0–5)" />
-              <input type="number" id="nota5" placeholder="Preço (0–5)" />
+              ${camposNotas.map(c => gerarGrupoEstrelas(c.id, c.label)).join("")}
               <button onclick="enviar('${b.bathroom_id}', this)">Enviar</button>
             </div>
           </div>`;
+
           marker.bindPopup(html).openPopup();
         });
+
+      map.once("popupopen", () => {
+        document.querySelectorAll(".star-group").forEach(group => {
+          group.querySelectorAll(".star").forEach(star => {
+            star.addEventListener("click", () => {
+              const value = parseInt(star.dataset.value);
+              group.dataset.valor = value;
+              group.querySelectorAll(".star").forEach(s => {
+                s.classList.toggle("selected", parseInt(s.dataset.value) <= value);
+              });
+            });
+          });
+        });
+      });
     }
 
     async function enviar(bathroomId, btn) {
@@ -349,12 +356,16 @@
 
       const parent = btn.closest(".popup-box");
       const comentario = parent.querySelector("#comentario").value.trim();
-      const notas = ["nota1", "nota2", "nota3", "nota4", "nota5"].map(id =>
-        parseFloat(parent.querySelector("#" + id).value)
-      );
+      const grupos = parent.querySelectorAll(".star-group");
 
+      const valores = {};
+      grupos.forEach(g => {
+        valores[g.dataset.id] = parseInt(g.dataset.valor || 0);
+      });
+
+      const notas = Object.values(valores);
       if (notas.some(n => isNaN(n) || n < 0 || n > 5)) {
-        alert("Preencha todas as notas de 0 a 5.");
+        alert("Preencha todas as notas clicando nas estrelas.");
         return;
       }
 
@@ -362,11 +373,11 @@
         bathroom_id: bathroomId,
         user_id: user.id,
         comments: comentario,
-        nota_limpeza: notas[0],
-        nota_disponibilidade: notas[1],
-        nota_atendimento: notas[2],
-        nota_proximidade_pista: notas[3],
-        nota_preco: notas[4]
+        nota_limpeza: valores.limpeza,
+        nota_disponibilidade: valores.disponibilidade,
+        nota_atendimento: valores.atendimento,
+        nota_proximidade_pista: valores.proximidade,
+        nota_preco: valores.preco
       };
 
       const res = await fetch(`${API_BASE}/ratings`, {
@@ -377,8 +388,42 @@
 
       const data = await res.json();
       alert(data.mensagem || "Erro ao enviar.");
-      carregarMarcadores(); // atualiza a cor do marcador com a nova média
+      carregarMarcadores();
     }
+
+    let circuloUsuario = null;
+
+    function iniciarLocalizacaoEmTempoReal() {
+      if (!navigator.geolocation) {
+        alert("Seu navegador não suporta geolocalização.");
+        return;
+      }
+
+      navigator.geolocation.watchPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        if (!circuloUsuario) {
+          circuloUsuario = L.circleMarker([lat, lng], {
+            radius: 6,
+            color: '#007bff',
+            fillColor: '#007bff',
+            fillOpacity: 0.7
+          }).addTo(map).bindPopup("📍 Você está aqui");
+        } else {
+          circuloUsuario.setLatLng([lat, lng]);
+        }
+      }, err => {
+        console.error("Erro ao obter localização:", err);
+        alert("Não foi possível obter sua localização.");
+      }, {
+        enableHighAccuracy: true,
+        maximumAge: 3000,
+        timeout: 5000
+      });
+    }
+
+
   </script>
 </body>
 
