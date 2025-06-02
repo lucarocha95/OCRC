@@ -392,6 +392,7 @@
     }
 
     let circuloUsuario = null;
+    let mapaCentralizado = false;
 
     function iniciarLocalizacaoEmTempoReal() {
       if (!navigator.geolocation) {
@@ -413,6 +414,13 @@
         } else {
           circuloUsuario.setLatLng([lat, lng]);
         }
+
+        // Centraliza o mapa apenas uma vez
+        if (!mapaCentralizado) {
+          map.setView([lat, lng], 15);
+          mapaCentralizado = true;
+        }
+
       }, err => {
         console.error("Erro ao obter localização:", err);
         alert("Não foi possível obter sua localização.");
@@ -422,6 +430,7 @@
         timeout: 5000
       });
     }
+
 
 
   </script>
