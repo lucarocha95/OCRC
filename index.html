@@ -7,7 +7,7 @@
   <title>OCRC - Onde Cagar Running Club</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <!-- <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> -->
   <style>
     body {
       margin: 0;
@@ -35,20 +35,44 @@
     #loginForm,
     #signupForm {
       position: absolute;
-      top: 50px;
+      top: 70px;
       right: 10px;
       z-index: 1000;
-      background: white;
-      padding: 10px;
-      border: 1px solid #ccc;
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #ddd;
+      width: 240px;
       display: none;
     }
 
     #loginForm input,
     #signupForm input {
       display: block;
-      margin-bottom: 6px;
-      width: 200px;
+      margin-bottom: 10px;
+      padding: 8px;
+      width: 92%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    #loginForm button,
+    #signupForm button {
+      background-color: #28a745;
+      color: white;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    #loginForm button:hover,
+    #signupForm button:hover {
+      background-color: #218838;
     }
 
     .popup-box {
@@ -94,13 +118,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.1rem;
-      padding: 1rem 2rem;
+      gap: 0rem;
+      padding: 1rem 1rem;
       background-color: #ffffff;
     }
 
     .logo-ocrc {
-      width: 150px;
+      width: 200px;
       height: auto;
     }
 
@@ -110,22 +134,48 @@
       color: #333;
       margin: 0;
     }
+
+    .topbar button {
+      padding: 8px 14px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      margin-top: 1.2rem;
+    }
+
+    .topbar button:hover {
+      background-color: #0056b3;
+    }
+
+    #welcomeText {
+      font-size: 14px;
+      margin-top: 1.2rem;
+      font-style: italic;
+      font-weight: bold;
+      color: #007bff;
+    }
   </style>
 </head>
 
 
 <body>
   <header class="logo-bar">
-    <img src="frontend/assets/logo_horizontal.png" alt="Logo do OCRC" class="logo-ocrc">
-    <h1 class="logo-text">Poo Point</h1>
+    <div class="logo-container">
+      <img src="frontend/assets/logo_horizontal3.png" alt="Logo do OCRC" class="logo-ocrc">
+      <!-- <h1 class="logo-text">Poo Point</h1> -->
+    </div>
+    <div class="topbar">
+      <span id="welcomeText" style="display:none; font-size: 14px;"></span>
+      <button id="logoutBtn" style="display:none;" onclick="logout()">Sair</button>
+      <button id="signupBtn">Cadastre-se</button>
+      <button id="loginBtn">Login</button>
+    </div>
   </header>
 
-  <div class="topbar">
-    <span id="welcomeText" style="display:none; font-size: 14px;"></span>
-    <button id="logoutBtn" style="display:none;" onclick="logout()">Sair</button>
-    <button id="signupBtn">Cadastre-se</button>
-    <button id="loginBtn">Login</button>
-  </div>
 
   <div id="loginForm">
     <input type="email" id="loginEmail" placeholder="Email" />
